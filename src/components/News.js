@@ -268,12 +268,12 @@ export default class News extends Component {
     super();
     console.log('iam constructor');
     this.state={
-      articles:this.articles,loading:false
+      articles:this.articles,loading:false,page:1
 
     }
   } 
   async componentDidMount() {
-    let url="https://newsapi.org/v2/top-headlines?country=us&apiKey=ca5a3752a60f4102970776e2a8a9d1ef";
+    let url="https://newsapi.org/v2/top-headlines?country=us&apiKey=ca5a3752a60f4102970776e2a8a9d1ef&page=1";
     let data= await fetch(url);
     let parseddata= await  data.json();
     console.log(parseddata);
@@ -283,22 +283,48 @@ export default class News extends Component {
 
     
   }
-  
- 
+
+  handlenext= async ()=>{
+console.log("next");
+let url=`https://newsapi.org/v2/top-headlines?country=us&apiKey=ca5a3752a60f4102970776e2a8a9d1ef&page=${this.state.page + 1}`;
+    let data= await fetch(url);
+    let parseddata= await  data.json();
+    console.log(parseddata);
+this.setState({
+    page:this.state.page+1,articles:parseddata.articles
+});
+  }
+   handleprivious= async()=>{
+    console.log("privious");
+    let url=`https://newsapi.org/v2/top-headlines?country=us&apiKey=ca5a3752a60f4102970776e2a8a9d1ef&page=${this.state.page - 1}`;
+    let data= await fetch(url);
+    let parseddata= await  data.json();
+    console.log(parseddata);
+this.setState({
+    page:this.state.page-1,articles:parseddata.articles
+});
+
+  }
 
   render() {
     return (
 
       <div>
-       <div className="container bg-info">  
+       <div className="container ">  
       
         <div className='row'>
         {this.state.articles.map((element)=>
           { return  <div key={element.publishedAt} className="col-md-3 card  mx-3 my-3" style={{width: "18rem"}}>
-            <Newsitems title={element.title} description={element.description}url={element.url}imageurl={element?element.urlToImage:"https://deadline.com/wp-content/uploads/2024/09/mr-beast-march-2024-getty.jpg?w=1024"}></Newsitems></div>})} 
+            <Newsitems title={element.title} description={element.description}url={element.url}imageurl={element?element.urlToImage:"https://deadline.com/wp-content/uploads/2024/09/mr-beast-march-2024-getty.jpg?w=1024"}></Newsitems>
+            </div>})} 
          
         
         </div>
+        </div>
+        <div className="container d-flex justify-content-between">
+          <button disabled={this.state.page<=1}type="button" className="btn btn-dark" onClick={this.handleprivious}>  &larr; Previous</button>
+          <button type="button"  className="btn btn-dark" onClick={this.handlenext}>Next  &rarr;</button>
+          
         </div>
        </div>
     )
